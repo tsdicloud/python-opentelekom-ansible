@@ -1,0 +1,25 @@
+---  
+  - name: Setup VPC network
+    otc_vpc:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net_admin.vpc.name }}"
+      cidr: "10.19.0.0/16"
+    register: network_result
+    when: net_admin_state == 'present'
+
+  - name: Remove VPC network
+    otc_vpc:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      name: "{{ net_admin.vpc.name }}"
+    register: network_result
+    when: net_admin_state == 'present'
+    

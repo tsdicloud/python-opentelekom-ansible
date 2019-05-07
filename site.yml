@@ -1,0 +1,6 @@
+---
+# build admin avi_network
+- name: Profi admin net
+  hosts: net-admin
+  roles:
+    - { role: net-admin, tags: networks }

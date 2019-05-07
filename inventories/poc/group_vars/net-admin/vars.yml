@@ -1,0 +1,26 @@
+---
+net_admin:
+  vpc:
+    name: "vpc-poc-admin"
+    cidr: "10.19.0.0/16"
+  subnets:
+    access:
+      name: "sn-poc-access"
+      cidr: "10.19.0.0/21"
+      nameservers: "{{ ['100.125.4.25', '8.8.8.8'] }}"  # the usual Open Telekom Default
+    worker:
+      name: "sn-poc-worker"
+      cidr: "10.19.128.0/21"
+      nameservers: "{{ ['100.125.4.25', '8.8.8.8'] }}"
+  dns:
+    zone: "poc.internal"
+
+# ansible_facts:
+#   net_admin:
+#     network: { from os_network }
+#     vpc: { from os_router }
+#     zone: { from os_zone }
+#     subnets:
+#       access: { from os_subnet }
+#       worker: { from os_subnet }
+#       target: { from os_subnet}

@@ -1,0 +1,16 @@
+---
+net_admin:
+  state: "present"
+  vpc_name: "vpc-poc-admin"
+  subnets:
+    access_name: "sn-poc-access"
+    access_cidr: "10.16.0.0/16"
+    worker_name: "sn-poc-worker"
+    worker_cidr: "10.17.0.0/16"
+    target_name: "sn-poc-target"
+    target_cidr: "10.18.0.0/16"
+  dns:
+    zone: "poc.internal"    
+
+
+

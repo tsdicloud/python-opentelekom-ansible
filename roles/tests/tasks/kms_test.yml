@@ -1,0 +1,84 @@
+---  
+  - name: Aquire a CMK key
+    otc_key:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "rbe-sdktest-key-000018"
+    register: kms_result
+    when: net_admin_state == 'present'
+
+  - name: Disable CMK key
+    otc_key:
+      state: "disabled"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "rbe-sdktest-key-000018"
+    register: kms_result
+    when: net_admin_state == 'present'
+
+  - name: Enable CMK key
+    otc_key:
+      state: "enabled"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "rbe-sdktest-key-000018"
+    register: kms_result
+    when: net_admin_state == 'present'
+
+  - name: schedule CMK key deletion
+    otc_key:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "rbe-sdktest-key-000018"
+    register: kms_result
+    when: net_admin_state == 'present'
+
+  - name: re-disable CMK key deletion
+    otc_key:
+      state: "disabled"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "rbe-sdktest-key-000018"
+    register: kms_result
+    when: net_admin_state == 'present'
+
+  - name: schedule CMK key deletion (again)
+    otc_key:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "rbe-sdktest-key-000018"
+    register: kms_result
+    when: net_admin_state == 'present'
+
+  - name: re-enable CMK key deletion
+    otc_key:
+      state: "enabled"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "rbe-sdktest-key-000018"
+    register: kms_result
+    when: net_admin_state == 'present'

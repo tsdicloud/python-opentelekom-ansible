@@ -1,0 +1,108 @@
+---  
+  - name: Setup VPC networks
+    os_network:
+      state: "present"
+      project: "{{ otc_os_auth.project_name }}"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      name: "net-{{ net_admin.vpc.name }}"
+    register: network_result
+    when: net_admin_state == 'present'
+  - set_fact: 
+      net_admin_facts:
+        network: "{{ network_result.network }}"
+    when: net_admin_state == 'present'
+     
+  - name: "Access subnet {{ net_admin.subnets.access.name }}"
+    os_subnet:
+      state: "{{ net_admin_state }}"
+      project: "{{ otc_os_auth.project_name }}"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      name: "{{ net_admin.subnets.access.name }}" 
+      cidr: "{{ net_admin.subnets.access.cidr }}"
+      gateway_ip: "{{ net_admin.subnets.access.gateway_ip | default(net_admin.subnets.access.cidr|ipaddr('1')|ipaddr('address')) }}"
+      network_name: "{{ net_admin_facts.network.name }}"
+      dns_nameservers: "{{ net_admin.subnets.access.nameservers }}"
+    register: sn_access_result
+  - set_fact:
+      net_admin_facts: "{{ net_admin_facts | combine({ 'subnets': { 'access': sn_access_result.subnet }}, recursive=True) }}"
+    when: net_admin_state == 'present'
+  - set_fact:
+      net_admin_facts: 
+        subnets:
+          access: "{{ sn_access_result.subnet }}"
+    when: net_admin_state == 'absent'
+
+  - name: "Worker subnet {{ net_admin.subnets.worker.name }}"
+    os_subnet:
+      state: "{{ net_admin_state }}"
+      project: "{{ otc_os_auth.project_name }}"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      name: "{{ net_admin.subnets.worker.name }}" 
+      cidr: "{{ net_admin.subnets.worker.cidr }}"
+      gateway_ip: "{{ net_admin.subnets.worker.gateway_ip | default(net_admin.subnets.worker.cidr|ipaddr('1')|ipaddr('address')) }}"
+      network_name: "{{ net_admin_facts.network.name }}"
+      dns_nameservers: "{{ net_admin.subnets.worker.nameservers }}"
+    register: sn_worker_result
+  - set_fact:
+      net_admin_facts: "{{ net_admin_facts | combine({ 'subnets': { 'worker': sn_worker_result.subnet }}, recursive=True) }}"
+
+  - name: "Target subnet {{ net_admin.subnets.target.name }}"
+    os_subnet:
+      state: "{{net_admin_state}}"
+      project: "{{ otc_os_auth.project_name }}"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      name: "{{ net_admin.subnets.target.name }}" 
+      cidr: "{{ net_admin.subnets.target.cidr }}"
+      gateway_ip: "{{ net_admin.subnets.target.gateway_ip | default(net_admin.subnets.target.cidr|ipaddr('1')|ipaddr('address')) }}"
+      network_name: "{{ net_admin_facts.network.name }}"
+      dns_nameservers: "{{ net_admin.subnets.target.nameservers }}"
+    register: sn_target_result
+  - set_fact:
+      net_admin_facts: "{{ net_admin_facts | combine({ 'subnets': { 'target': sn_target_result.subnet }}, recursive=True) }}"
+
+  - name: "VPC {{net_admin.vpc.name}}"
+    os_router:
+      state: "{{net_admin_state}}"
+      project: "{{ otc_os_auth.project_name }}"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      name: "{{ net_admin.vpc.name }}"
+      interfaces: 
+        - "{{ net_admin_facts.subnets.access.id }}"
+        - "{{ net_admin_facts.subnets.worker.id }}"
+        - "{{ net_admin_facts.subnets.target.id }}"
+    register: vpc_result
+  - set_fact:
+      net_admin_facts: "{{ net_admin_facts | combine({ 'vpc': vpc_result.router }) }}"
+  
+  - debug: var=net_admin_facts
+    when: net_admin_debug is defined and True
+
+      # - name: Teardown networks
+  #   os_network:
+  #     state: "absent"
+  #     project: "{{ otc_os_auth.project_name }}"
+  #     auth_type: password
+  #     auth:
+  #       "{{ otc_os_auth }}"
+  #     cacert: "{{ otc_cert_file }}"
+  #     name: "net-{{ net_admin.vpc.name }}"
+  #   register: network_result
+  #   when: net_admin_state == 'absent'
+  # - set_fact: 
+  #     net_admin_facts: "{{ net_admin_facts | combine({ 'network': network_result.network }) }}"
+  #   when: net_admin_state == 'absent'
