@@ -13,25 +13,21 @@ ANSIBLE_METADATA = {'metadata_version': '1.0',
 
 DOCUMENTATION = '''
 ---
-module: otc_vpc
-short_description: Creates/removes a VPC from Open Telekom Cloud
+module: otc_queue_group
+short_description: Creates/removes a consumer group from a queue
 extends_documentation_fragment: opentelekom-ansible
 version_added: "1.0"
 author: "B. Rederlechner (@brederle)"
 description:
-   - Add or remove VPC from OpenTelekomCloud project.
+   - Add or remove a consumer_group to/from a queue in Distributed Messaging Service
 options:
    name:
      description:
-        - Name to be assigned to the VPC.
+        - Name to be assigned to the queue.
      required: true
-   cidr:
+   queue_id:
      description:
-        - network cidr of the VPC
-     required: true
-   enable_shared_snat:
-     description:
-        - enable the shared snat option for the VPC
+        - the refernce to the queue the group is acssociated with
    state:
      description:
         - Indicate desired state of the resource.
@@ -47,35 +43,19 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-vpc:
-    description: Dictionary describing the VPC.
+queue_group:
+    description: Dictionary describing the queue group.
     returned: On success when I(state) is 'present'.
     type: complex
     contains:
         id:
-            description: VPC id.
+            description: queue id.
             type: str
             sample: "4bb4f9a5-3bd2-4562-bf6a-d17a6341bb56"
         name:
-            description: VPC name.
+            description: queue group name.
             type: str
-            sample: "own-name-vpc"
-        status:
-            description: VPC status.
-            type: str
-            sample: "OK"
-        routes:
-            description: special routes added to the VPC.
-            type: complex
-            contains:
-                destination:
-                    description: the destination netwrok segment as CIDR
-                    returned: always
-                    type: str
-                nexthop:
-                    description: the next hop of a route (IP address in a subnet of the VPC).
-                    returned: always
-                    type: str
+            sample: "own-name-qg"
 '''
 
 import json
@@ -84,14 +64,13 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.openstack import openstack_full_argument_spec, openstack_module_kwargs, openstack_cloud_from_module
 
 from opentelekom.connection import connect_from_ansible 
-from opentelekom.vpc import vpc_service, vpc2_service
+from opentelekom.dms import dms_service
 from openstack import exceptions 
 
 def main():
     argument_spec = openstack_full_argument_spec(
         name=dict(type='str', required=True),
-        cidr=dict(type='str'),
-        enable_shared_snat=dict(default=False, type='bool'),
+        queue_id=dict(type='str'),
         state=dict(default='present', choices=['absent', 'present']),
     )
 
@@ -100,29 +79,27 @@ def main():
 
     state = module.params['state']
     name = module.params['name']
+    queue = module.params['queue_id']
 
     cloud = connect_from_ansible(module)
     try:
-        cloud.add_service( vpc_service.VpcService("vpc", aliases=['vpc'] ))
-        cloud.add_service( vpc2_service.Vpc2Service("vpc2.0", aliases=['vpc2'] ))
+        cloud.add_service( dms_service.DmsService("dmsv1", aliases=['dms'] ))
 
-        v = cloud.vpc.find_vpc(name)
+        qgroup = cloud.dms.find_queue_group(queue=queue, name_or_id=name)
 
         if state == 'present':
-            if not v:
-                v = cloud.vpc.create_vpc(name=name,
-                    cidr=module.params['cidr'],
-                    enable_shared_snat=module.params['enable_shared_snat'])
+            if not qgroup:
+                qgroup = cloud.dms.create_queue_group(queue=queue,name=name)
                 changed = True
             else:
                 changed = False
-            module.exit_json(changed=changed, vpc=v.copy(), id=v.id )
+            module.exit_json(changed=changed, queue_group=qgroup.copy(), id=qgroup.id )
 
         elif state == 'absent':
-            if not v:
+            if not qgroup:
                 module.exit_json(changed=False)
             else:
-                cloud.vpc.delete_vpc(v)
+                cloud.dms.delete_queue_group(queue=queue,group=qgroup)
                 module.exit_json(changed=True)
 
     except exceptions.OpenStackCloudException as e:

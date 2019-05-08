@@ -113,7 +113,7 @@ def main():
         subnets = cloud.vpc.find_subnet(name_or_id=module.params['name'],
                                        **module.params['filters'])
         if subnets:
-            module.exit_json(changed=False, subnets=subnets.copy())
+            module.exit_json(changed=False, subnet=subnets.copy())
         else:
             module.fail_json(msg="Subnet %s not found" % module.params['name'])
 

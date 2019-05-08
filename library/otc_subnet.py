@@ -119,10 +119,12 @@ def _needs_update(module, cloud, res):
         return True
 
     # compare dns Nameserver lists
+    # FIXME: should be complement, not intersection!
     if set(res.dnsList).intersect(module.params['dns_nameservers']):
         return True
 
     # compare dicts
+    # FIXME: should be complement, not intersection!
     res_opts = _opts_to_dict(res.dhcp_extra_opts)
     if set(res_opts.items()).intersect(module.params['extra_dhcp_opts'].items()):
         return True
