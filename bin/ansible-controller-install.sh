@@ -33,15 +33,14 @@ popd
 # checkout current version of ansible from git
 # Ansible 2.x is not available as ready-made rpm package yet in repos
 # generally, use /tmp as working directory
-#pushd /tmp
-#git clone git://github.com/ansible/ansible.git --recursive
-#pushd ansible
-#sudo /usr/local/bin/pip3 install -r requirements.txt
-#make rpm
-#sudo yum install -y /tmp/ansible/rpm-build/ansible-*.noarch.rpm
-#popd
-#rm -rf /tmp/ansible
-#popd
+pushd /tmp
+git clone git://github.com/ansible/ansible.git --branch stable-2.8
+pushd ansible
+sudo /usr/local/bin/pip3 install -r requirements.txt
+sudo python3 setup.py install
+popd
+rm -rf /tmp/ansible
+popd
 
 # or installas rpm directly from ansible
 #sudo yum install https://releases.ansible.com/ansible/rpm/release/epel-7-x86_64/ansible-2.7.9-1.el7.ans.noarch.rpm
