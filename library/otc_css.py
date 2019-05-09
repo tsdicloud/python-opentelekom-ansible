@@ -53,7 +53,7 @@ options:
         - reference to a customer master key id (if encryption is needed)
    volume_type:
      description:
-        - type of the volume; one of COMMON, ULTRAHIGH
+        - type of the volume; one of COMMON, HIGH, ULTRAHIGH
    volume_size:
      description:
         - size of the volumes to use
