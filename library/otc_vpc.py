@@ -87,6 +87,16 @@ from opentelekom.connection import connect_from_ansible
 from opentelekom.vpc import vpc_service, vpc2_service
 from openstack import exceptions 
 
+
+def _needs_update(module, cloud, res):
+    if (res.cidr != module.params['cidr'] or
+        res.enable_shared_snat != module.params['enable_shared_snat']):
+        return True
+    else:
+        return False
+
+
+
 def main():
     argument_spec = openstack_full_argument_spec(
         name=dict(type='str', required=True),
@@ -111,6 +121,12 @@ def main():
         if state == 'present':
             if not v:
                 v = cloud.vpc.create_vpc(name=name,
+                    cidr=module.params['cidr'],
+                    enable_shared_snat=module.params['enable_shared_snat'])
+                changed = True
+            elif _needs_update(module, cloud, v):
+                v = cloud.vpc.update_vpc(vpc=v,
+                    name=name,
                     cidr=module.params['cidr'],
                     enable_shared_snat=module.params['enable_shared_snat'])
                 changed = True

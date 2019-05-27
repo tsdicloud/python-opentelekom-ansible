@@ -1,0 +1,25 @@
+---  
+  - name: Test create VPC network
+    otc_vpc:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net_admin.vpc.name }}"
+      cidr: "10.19.0.0/16"
+    register: network_result
+
+  - name: Test update VPC network
+    otc_vpc:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net_admin.vpc.name }}"
+      enable_shared_snat: True
+      cidr: "10.20.0.0/16"
+    register: network_result
