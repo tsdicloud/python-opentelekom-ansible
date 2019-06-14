@@ -1,0 +1,40 @@
+---
+  - name: Aquire an external EIP
+    otc_eip:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+    register: snat_rule_eip
+
+  - otc_nat:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net.vpc.name}}-nat"
+      description: "Some ansible test nat"
+      vpc_id: "{{ net_facts.vpc.id }}"
+      subnet_id: "{{ net_facts.subnets.access.id }}"
+      spec: "1"
+    register: nat_result
+  - set_fact: 
+      net_admin_facts: "{{ net_facts | combine({ 'nat': nat_result.nat }, recursive=True) }}"
+
+  - otc_nat_snatrule:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      nat_gateway_id: "{{ nat_result.id }}"
+      subnet_id: "{{ net_facts.subnets.access.id }}"
+      eip_id: "{{ snat_rule_eip.id }}"
+    register: snat_rule1
+  - set_fact: 
+      net_admin_facts: "{{ net_facts | combine({ 'nat': { 'rules': snat_rule1 } }, recursive=True) }}"

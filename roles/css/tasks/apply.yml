@@ -51,28 +51,3 @@
       security_group_id: "{{ css_sg_result.id }}"
       httpsEnable: "true"
       disk_encryption_id: "{{ kms_result.id }}"
-
-
-
-  - name: RDS database
-    otc_rds:
-      state: "present"
-      auth_type: password
-      auth:
-        "{{ otc_os_auth }}"
-      cacert: "{{ otc_cert_file }}"
-      validate_certs: "yes"
-      name: "{{ net_admin.vpc.name }}-db1"
-      datastore_type: 'mysql'
-      datastore_version: "5.7"
-      flavor_ref: "rds.mysql.c2.medium"
-      volume_type: "COMMON"
-      volume_size: 100
-      region: "eu-de"
-      availability_zone: "eu-de-01"
-      password: "Test@12345678"
-      vpc_id: "{{ net_admin_facts.vpc.id }}"
-      subnet_id: "{{ net_admin_facts.subnets.worker.id }}"
-      security_group_id: "{{ rds1_sg_result.id }}"
-      disk_encryption_id: "{{ kms_result.id }}"
-

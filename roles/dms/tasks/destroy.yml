@@ -1,0 +1,21 @@
+
+  - name: Delete consumer group
+    otc_queue_group:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "rbe-sdktest-qgroup"
+      queue_id: "{{ q_facts.id }}" 
+
+  - name: Delete queue
+    otc_queue:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "rbe-sdktest-q" 

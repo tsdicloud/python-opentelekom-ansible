@@ -6,7 +6,7 @@
       auth:
         "{{ otc_os_auth }}"
       cacert: "{{ otc_cert_file }}"
-      name: "{{ net.subnets.worker.name }}" 
+      name: "{{ net.subnets.backend.name }}" 
 
   - name: "Cleanup worker subnet {{ net.subnets.worker.name }}"
     otc_subnet:
@@ -33,4 +33,4 @@
       auth:
         "{{ otc_os_auth }}"
       cacert: "{{ otc_cert_file }}"
-      name: "{{ net_admin.vpc.name }}"
+      name: "{{ net.vpc.name }}"

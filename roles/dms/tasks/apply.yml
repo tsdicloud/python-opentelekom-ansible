@@ -1,0 +1,26 @@
+---  
+  - name: "Queue rbe-sdktest-q"
+    otc_queue:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "rbe-sdktest-q"
+      queue_mode: "KAFKA_HA"
+      description: "Test high-available kafka queue creation" 
+      retention_hours: 10
+    register: q_facts
+
+  - name: "Consumer group rbe-sdktest-qgroup"
+    otc_queue_group:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "rbe-sdktest-qgroup" 
+      queue_id: "{{ q_facts.id }}" 
+    register: qgroup_facts

@@ -19,7 +19,7 @@
         "{{ otc_os_auth }}"
       cacert: "{{ otc_cert_file }}"
       validate_certs: "yes"
-      name: "{{ net_admin.vpc.name }}-css-sg"
+      name: "{{ net.vpc.name }}-css-sg"
     register: delete_state
     retries: 20
     delay:   15

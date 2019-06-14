@@ -1,0 +1,55 @@
+---  
+  - name: "Aquire CMK key {{ kms.keyname }}"
+    otc_key:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ kms.keyname }}"
+    register: kms_result
+
+  - name: "Disable CMK key {{ kms.keyname }}"
+    otc_key:
+      state: "disabled"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ kms.keyname }}"
+    register: kms_result
+
+  - name: "Enable CMK key {{ kms.keyname }}"
+    otc_key:
+      state: "enabled"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ kms.keyname }}"
+    register: kms_result
+
+  - name: "Schedule CMK key deletion {{ kms.keyname }}"
+    otc_key:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ kms.keyname }}"
+    register: kms_result
+
+  - name: "Cancel CMK key deletion {{ kms.keyname }}"
+    otc_key:
+      state: "disabled"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ kms.keyname }}"
+    register: kms_result

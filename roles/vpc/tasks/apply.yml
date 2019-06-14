@@ -1,5 +1,5 @@
 ---  
-  - name: Test create VPC network
+  - name: VPC network
     otc_vpc:
       state: "present"
       auth_type: password
@@ -8,7 +8,7 @@
       cacert: "{{ otc_cert_file }}"
       validate_certs: "yes"
       name: "{{ net.vpc.name }}"
-      cidr: "10.18.0.0/16"
+      cidr: "{{ net.vpc.cidr }}"
       enable_shared_snat: True
     register: network_result
 
@@ -25,7 +25,9 @@
       cidr: "{{ net.vpc.cidr }}"
     register: network_result
   - set_fact:
-      net_facts: "{{ net_facts | combine({ 'vpc': { 'id': network_result.id }}, recursive=True) }}"
+      net_facts:
+        vpc: 
+          id: "{{ network_result.id }}"
 
   - name: "Access subnet {{ net.subnets.worker.name }}"
     otc_subnet:
@@ -54,8 +56,8 @@
       vpc_id: "{{ net_facts.vpc.id }}"
       cidr: "{{ net.subnets.worker.cidr }}"
       gateway_ip: "{{ net.subnets.worker.gateway_ip | default(net.subnets.worker.cidr|ipaddr(1)|ipaddr('address')) }}"
-      dns_nameservers: "{{ net.subnets.access.nameservers }}"
-    register: sn_access_result
+      dns_nameservers: "{{ net.subnets.worker.nameservers }}"
+    register: sn_worker_result
   - set_fact:
       net_facts: "{{ net_facts | combine({ 'subnets': { 'worker': sn_worker_result.subnet }}, recursive=True) }}"
 
@@ -66,11 +68,11 @@
       auth:
         "{{ otc_os_auth }}"
       cacert: "{{ otc_cert_file }}"
-      name: "{{ net.subnets.worker.name }}" 
+      name: "{{ net.subnets.backend.name }}" 
       vpc_id: "{{ net_facts.vpc.id }}"
-      cidr: "{{ net.subnets.worker.cidr }}"
-      gateway_ip: "{{ net.subnets.worker.gateway_ip | default(net.subnets.worker.cidr|ipaddr(1)|ipaddr('address')) }}"
-      dns_nameservers: "{{ net.subnets.worker.nameservers }}"
+      cidr: "{{ net.subnets.backend.cidr }}"
+      gateway_ip: "{{ net.subnets.backend.gateway_ip | default(net.subnets.backend.cidr|ipaddr(1)|ipaddr('address')) }}"
+      dns_nameservers: "{{ net.subnets.backend.nameservers }}"
     register: sn_backend_result
   - set_fact:
-      net_facts: "{{ net_facts | combine({ 'subnets': { 'worker': sn_backend_result.subnet }}, recursive=True) }}"
+      net_facts: "{{ net_facts | combine({ 'subnets': { 'backend': sn_backend_result.subnet }}, recursive=True) }}"

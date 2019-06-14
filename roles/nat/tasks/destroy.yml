@@ -1,0 +1,19 @@
+---
+  - otc_nat_snatrule:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      nat_gateway_id: "{{ nat_result.id }}"
+      subnet_id: "{{ net_facts.subnets.access.id }}"
+
+  - otc_nat:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net.vpc.name }}-nat"
