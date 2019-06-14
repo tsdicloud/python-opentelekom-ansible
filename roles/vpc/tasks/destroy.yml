@@ -1,5 +1,32 @@
 ---
-  - name: Test_delete VPC network
+  - name: "Cleanup backend subnet {{ net.subnets.backend.name }}"
+    otc_subnet:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      name: "{{ net.subnets.worker.name }}" 
+
+  - name: "Cleanup worker subnet {{ net.subnets.worker.name }}"
+    otc_subnet:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      name: "{{ net.subnets.worker.name }}" 
+
+  - name: "Cleanup access subnet {{ net.subnets.access.name }}"
+    otc_subnet:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      name: "{{ net.subnets.access.name }}"
+
+  - name: Cleanup VPC network
     otc_vpc:
       state: "absent"
       auth_type: password
@@ -7,4 +34,3 @@
         "{{ otc_os_auth }}"
       cacert: "{{ otc_cert_file }}"
       name: "{{ net_admin.vpc.name }}"
-    register: network_result

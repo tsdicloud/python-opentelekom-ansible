@@ -1,0 +1,57 @@
+---  
+  - name: "Security_group {{ net_admin.vpc.name }}-rds1-sg"
+    os_security_group:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net_admin.vpc.name }}-rds1-sg"
+    register: rds1_sg_result
+  - os_security_group_rule:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      direction: "ingress"
+      protocol: "tcp"
+      port_range_max: 22
+      port_range_min: 22
+      security_group: "{{ rds1_sg_result.id }}"
+  
+  - name: Aquire key
+    otc_key:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ kms.keyname }}"
+    register: kms_result
+    
+  - name: RDS database
+    otc_rds:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net_admin.vpc.name }}-db1"
+      datastore_type: 'mysql'
+      datastore_version: "5.7"
+      flavor_ref: "rds.mysql.c2.medium"
+      volume_type: "COMMON"
+      volume_size: 100
+      region: "eu-de"
+      availability_zone: "eu-de-01"
+      password: "Test@12345678"
+      vpc_id: "{{ net_admin_facts.vpc.id }}"
+      subnet_id: "{{ net_admin_facts.subnets.worker.id }}"
+      security_group_id: "{{ rds1_sg_result.id }}"
+      disk_encryption_id: "{{ kms_result.id }}"
+

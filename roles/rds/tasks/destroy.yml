@@ -1,0 +1,26 @@
+---
+  - name: Cleanup RDS database
+    otc_rds:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net_admin.vpc.name }}-db1"
+
+  # retry deletion of security group until
+  # cluster really disappered from the network
+  - name: Cleanup security group
+    os_security_group:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net_admin.vpc.name }}-rds1-sg"
+    register: delete_state
+    retries: 20
+    delay:   15
+    until: delete_state is not failed

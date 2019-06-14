@@ -1,7 +1,7 @@
 # a host file that only contains the required groups
-[net-admin]
+[infra]
 localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python3
 
-# the required server(s) are later added with add_host
+# TODO: the required server(s) are later added with add_host
 [cluster_rds]
 [cluster_elastic]

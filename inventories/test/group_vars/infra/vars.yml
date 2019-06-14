@@ -1,0 +1,32 @@
+---
+net:
+  vpc:
+    name: "vpc-ansible-test"
+    cidr: "10.19.0.0/16"
+  subnets:
+    access:
+      name: "sn-ansible-test-access"
+      cidr: "10.19.0.0/22"
+      nameservers: "{{ ['100.125.4.25', '8.8.8.8'] }}"  # the usual Open Telekom Default
+    worker:
+      name: "sn-ansible-test-worker"
+      cidr: "10.19.32.0/22"
+      nameservers: "{{ ['100.125.4.25', '8.8.8.8'] }}"
+    backend:
+      name: "sn-ansible-test-back"
+      cidr: "10.19.64.0/22"
+      nameservers: "{{ ['100.125.4.25', '8.8.8.8'] }}"
+  dns:
+    zone: "ansibletest.internal"
+kms:
+  keyname: "rbe-sdktest-key-000018"
+
+# ansible_facts:
+#   net_admin:
+#     network: { from os_network }
+#     vpc: { from os_router }
+#     zone: { from os_zone }
+#     subnets:
+#       access: { from os_subnet }
+#       worker: { from os_subnet }
+#       target: { from os_subnet}

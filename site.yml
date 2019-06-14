@@ -1,8 +1,13 @@
 ---
-- name: OpenTelekom ansible task test playbook - apply changes
-  hosts: net-admin
+- name: OpenTelekom ansible task test playbook
+  hosts: infra
   roles:
-    - { role: vpc, tags: test-vpc }
-    #- { role: vpc, tags: test-vpc, state='absent' }
+    - { role: vpc, tags: [ test-vpc, apply, test-rds, test-css ], state='present' }
+    - { role: rds, tags: [ test-rds, apply ], state='present' }
+    - { role: rds, tags: [ test-rds, destroy], state='absent' }
+    - { role: css, tags: [ test-css, apply ], state='present' }
+    - { role: css, tags: [ test-css, destroy], state='absent' }
+    - { role: vpc, tags: [ test-vpc, destroy, test-rds, test-css ], state='absent' }
+    #- { role: exceptiontest, tags: [ test-ex, apply ], state='present' }
 
     
