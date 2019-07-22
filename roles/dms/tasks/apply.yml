@@ -15,7 +15,6 @@
 
   - name: "Consumer group rbe-sdktest-qgroup"
     otc_queue_group:
-      state: "present"
       auth_type: password
       auth:
         "{{ otc_os_auth }}"

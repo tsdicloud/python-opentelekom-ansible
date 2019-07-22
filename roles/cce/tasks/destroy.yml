@@ -1,0 +1,23 @@
+---
+  - name: Delete az2 nodes first
+    otc_cce_node:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      cluster: "{{ net.vpc.name }}-cce"
+      availability_zone: "eu-de-02"
+
+  - pause:
+
+  - name: Cleanup CSS service
+    otc_cce:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net.vpc.name }}-cce"
