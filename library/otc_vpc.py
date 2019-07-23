@@ -89,11 +89,16 @@ from openstack import exceptions
 
 
 def _needs_update(module, cloud, res):
-    if (res.cidr != module.params['cidr'] or
-        res.enable_shared_snat != module.params['enable_shared_snat']):
+    if res.cidr != module.params['cidr']:
         return True
-    else:
-        return False
+    
+    if not hasattr(res, 'enable_shared_snat') and module.params['enable_shared_snat']:
+        return True
+    
+    if hasattr(res, 'enable_shared_snat') and (res.enable_shared_snat != module.params['enable_shared_snat']):
+        return True
+    
+    return False
 
 
 

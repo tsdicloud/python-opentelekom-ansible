@@ -11,23 +11,23 @@
       cidr: "{{ net.vpc.cidr }}"
       enable_shared_snat: True
     register: network_result
-
-  - name: Test update VPC network
-    otc_vpc:
-      state: "present"
-      auth_type: password
-      auth:
-        "{{ otc_os_auth }}"
-      cacert: "{{ otc_cert_file }}"
-      validate_certs: "yes"
-      name: "{{ net.vpc.name }}"
-      enable_shared_snat: False
-      cidr: "{{ net.vpc.cidr }}"
-    register: network_result
   - set_fact:
       net_facts:
         vpc: 
           id: "{{ network_result.id }}"
+  #- name: Test update VPC network
+  #  otc_vpc:
+  #    state: "present"
+  #    auth_type: password
+  #    auth:
+  #      "{{ otc_os_auth }}"
+  #    cacert: "{{ otc_cert_file }}"
+  #    validate_certs: "yes"
+  #    name: "{{ net.vpc.name }}"
+  #    enable_shared_snat: False
+  #    cidr: "{{ net.vpc.cidr }}"
+  #  register: network_result
+  #
 
   - name: "Access subnet {{ net.subnets.worker.name }}"
     otc_subnet:

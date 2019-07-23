@@ -95,7 +95,7 @@ def _can_update(module, cloud, res):
         module.fail_json(
             msg='Cannot re-assign subnet to another vpc %s' % res.vpc_id)
     if res.gateway_ip != module.params['gateway_ip']:
-        module.fail_json(msg='Cannot change gateway IP %s to  %s' % (res.gateway_ip, module.params['gateway_id']) )
+        module.fail_json(msg='Cannot change gateway IP %s to  %s' % (res.gateway_ip, module.params['gateway_ip']) )
 
 
 def _opts_to_dict(extra_dhcp_opts):
