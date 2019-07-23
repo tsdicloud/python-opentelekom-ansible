@@ -50,6 +50,9 @@ popd
 # or even better: directly install from pip3
 sudo /usr/local/bin/pip3 install ansible
 
+# enable TCP forwarding e.g. for VSCode Remote Development
+sudo sed -i 's/^.*AllowTcpForwarding.*/AllowTcpForwarding yes/' /etc/ssh/sshd_config; systemctl restart sshd
+sudo grep -q 'fs.inotify.max_user_watches' /etc/sysctl.conf && sed -i 's/.*fs.inotify.max_user_watches.*/fs.inotify.max_user_watches=524288/' /etc/sysctl.conf || echo '/fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf; sysctl -p
 
 # install an optional proxy on the ansible server
 # as internet access point for local VMs
