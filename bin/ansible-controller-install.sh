@@ -12,7 +12,7 @@ sudo yum -y update --skip-broken
 
 # prepare to build a current version of ansible (>= 2.0) to support OpenStack
 # psycopg2 for Postgres installation
-sudo yum --enablerepo=epel -y install make rpm-build python36-psycopg2 python36-docutils asciidoc git expect libffi-devel openssl-devel --skip-broken
+sudo yum --enablerepo=epel -y install make rpm-build python36-setuptools python36-psycopg2 python36-docutils asciidoc git expect libffi-devel openssl-devel --skip-broken
 
 # install OpenStack+OTC extension+shade client lib
 # to control the OpenStack by API
