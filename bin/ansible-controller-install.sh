@@ -12,7 +12,9 @@ sudo yum -y update --skip-broken
 
 # prepare to build a current version of ansible (>= 2.0) to support OpenStack
 # psycopg2 for Postgres installation
-sudo yum --enablerepo=epel -y install make rpm-build python36-psycopg2 python36-docutils asciidoc git expect libffi-devel openssl-devel --skip-broken
+sudo yum --enablerepo=epel -y install make rpm-build python36 python36-psycopg2 python36-docutils asciidoc git expect libffi-devel openssl-devel --skip-broken
+sudo python3 -m ensurepip
+sudo ln -s /usr/local/bin/pip3 /usr/bin/pip3
 
 # install OpenStack+OTC extension+shade client lib
 # to control the OpenStack by API
@@ -22,24 +24,28 @@ sudo /usr/bin/pip3 install --upgrade pip setuptools packaging
 # and we also want to have opentelekomsdk extensions which automatically pulls
 # a proper openstacksdk version as dependency
 pushd /tmp
+# make script more stable by preventive cleanup before clone
+sudo rm -rf python-opentelekom-sdk
 git clone https://github.com/tsdicloud/python-opentelekom-sdk
 pushd python-opentelekom-sdk
-sudo /usr/local/bin/pip3 install -r requirements.txt
+sudo /usr/bin/pip3 install -r requirements.txt
 sudo python3 setup.py install 
 popd
-rm -rf python-opentelekom-sdk
+sudo rm -rf python-opentelekom-sdk
 popd
  
 # checkout current version of ansible from git
 # Ansible 2.x is not available as ready-made rpm package yet in repos
 # generally, use /tmp as working directory
 pushd /tmp
+# make script more stable and do preventive cleanup
+sudo rm -rf ansible
 git clone git://github.com/ansible/ansible.git --branch stable-2.8
 pushd ansible
-sudo /usr/local/bin/pip3 install -r requirements.txt
+sudo /usr/bin/pip3 install -r requirements.txt
 sudo python3 setup.py install
 popd
-rm -rf /tmp/ansible
+sudo rm -rf ansible
 popd
 
 # or installas rpm directly from ansible
@@ -48,11 +54,15 @@ popd
 # or, preferably, install ansible from python repo
 # see also: http://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
 # or even better: directly install from pip3
-sudo /usr/local/bin/pip3 install ansible
+#sudo /usr/bin/pip3 install ansible
 
 # enable TCP forwarding e.g. for VSCode Remote Development
-sudo sed -i 's/^.*AllowTcpForwarding.*/AllowTcpForwarding yes/' /etc/ssh/sshd_config; systemctl restart sshd
-sudo grep -q 'fs.inotify.max_user_watches' /etc/sysctl.conf && sed -i 's/.*fs.inotify.max_user_watches.*/fs.inotify.max_user_watches=524288/' /etc/sysctl.conf || echo '/fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf; sysctl -p
+sudo sed -i 's/^.*AllowTcpForwarding.*/AllowTcpForwarding yes/' /etc/ssh/sshd_config
+sudo systemctl restart sshd
+sudo -- bash -c "grep -q  'fs.inotify.max_user_watches' /etc/sysctl.conf && 
+       sed -i 's/.*fs.inotify.max_user_watches.*/fs.inotify.max_user_watches=524288/' /etc/sysctl.conf || 
+       echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf"
+sudo sysctl -p
 
 # install an optional proxy on the ansible server
 # as internet access point for local VMs
