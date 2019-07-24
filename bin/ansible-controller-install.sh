@@ -19,15 +19,15 @@ sudo yum --enablerepo=epel -y install make rpm-build python36-psycopg2 python36-
 sudo /usr/bin/pip3 install --upgrade pip setuptools packaging
 
 # thats new since 2018: shade is replaced by openstacksdk, which is now used by ansible
-# and the public available pip version has a version problem, so we have to install from source
-# sudo /usr/local/bin/pip3 install openstacksdk
+# and we also want to have opentelekomsdk extensions which automatically pulls
+# a proper openstacksdk version as dependency
 pushd /tmp
-git clone https://github.com/openstack/openstacksdk
-pushd openstacksdk
+git clone https://github.com/tsdicloud/python-opentelekom-sdk
+pushd python-opentelekom-sdk
 sudo /usr/local/bin/pip3 install -r requirements.txt
 sudo python3 setup.py install 
 popd
-rm -rf openstacksdk
+rm -rf python-opentelekom-sdk
 popd
  
 # checkout current version of ansible from git
