@@ -84,7 +84,7 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.openstack import openstack_full_argument_spec, openstack_module_kwargs, openstack_cloud_from_module
 
 from opentelekom.connection import connect_from_ansible 
-from opentelekom.vpc import vpc_service, vpc2_service
+from opentelekom.vpc import vpc_service
 from openstack import exceptions 
 
 
@@ -118,8 +118,8 @@ def main():
 
     cloud = connect_from_ansible(module)
     try:
-        cloud.add_service( vpc_service.VpcService("vpc", aliases=['vpc'] ))
-        cloud.add_service( vpc2_service.Vpc2Service("vpc2.0", aliases=['vpc2'] ))
+        cloud.add_service( vpc_service.VpcService("vpc", aliases=['vpc1'] ))
+        cloud.add_service( vpc_service.VpcService("vpc2.0", aliases=['vpc2'] ))
 
         v = cloud.vpc.find_vpc(name)
 
