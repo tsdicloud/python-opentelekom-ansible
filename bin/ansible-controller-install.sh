@@ -10,15 +10,27 @@ sudo yum -y install epel-release
 # patch CentOS to most frequent level
 sudo yum -y update --skip-broken
 
+# enable auto secuirty updating
+sudo yum -y install yum-cron
+sudo systemctl start yum-cron
+sudo systemctl enable yum-cron
+
+# TODO: Configure /etc/yum/yum-cron.conf
+# update_cmd = security
+# update_messages = yes
+# download_updates = yes
+# apply_updates = yes
+
+
 # prepare to build a current version of ansible (>= 2.0) to support OpenStack
 # psycopg2 for Postgres installation
-sudo yum --enablerepo=epel -y install make rpm-build python36 python36-psycopg2 python36-docutils asciidoc git expect libffi-devel openssl-devel --skip-broken
+sudo yum --enablerepo=epel -y install make rpm-build python3 asciidoc git expect libffi-devel openssl-devel --skip-broken
 sudo python3 -m ensurepip
 sudo ln -s /usr/local/bin/pip3 /usr/bin/pip3
 
 # install OpenStack+OTC extension+shade client lib
 # to control the OpenStack by API
-sudo /usr/bin/pip3 install --upgrade pip setuptools packaging
+sudo /usr/local/bin/pip3 install --upgrade pip setuptools packaging
 
 # thats new since 2018: shade is replaced by openstacksdk, which is now used by ansible
 # and we also want to have opentelekomsdk extensions which automatically pulls
@@ -28,7 +40,7 @@ pushd /tmp
 sudo rm -rf python-opentelekom-sdk
 git clone https://github.com/tsdicloud/python-opentelekom-sdk
 pushd python-opentelekom-sdk
-sudo /usr/bin/pip3 install -r requirements.txt
+sudo /usr/local/bin/pip3 install -r requirements.txt
 sudo python3 setup.py install 
 popd
 sudo rm -rf python-opentelekom-sdk
@@ -40,9 +52,9 @@ popd
 pushd /tmp
 # make script more stable and do preventive cleanup
 sudo rm -rf ansible
-git clone git://github.com/ansible/ansible.git --branch stable-2.8
+git clone git://github.com/ansible/ansible.git --branch v2.9.1
 pushd ansible
-sudo /usr/bin/pip3 install -r requirements.txt
+sudo /usr/local/bin/pip3 install -r requirements.txt
 sudo python3 setup.py install
 popd
 sudo rm -rf ansible
