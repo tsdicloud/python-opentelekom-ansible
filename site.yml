@@ -4,8 +4,9 @@
   roles:
     - { role: dms, tags: [ test-dms, apply ], state='present' }
     - { role: dms, tags: [ test-dms, destroy], state='absent' }
-    - { role: vpc, tags: [ test-vpc, apply, test-nat, test-rds, test-css, test-cce ], state='present' }
+    - { role: vpc, tags: [ test-vpc, apply, test-peering, test-nat, test-rds, test-css, test-cce ], state='present' }
     - { role: kms, tags: [ test-kms, apply ], state='present' }
+    - { role: vpc_peering, tags: [ test-peering, apply ], state='present' }
     - { role: nat, tags: [ test-nat, apply ], state='present' }
     - { role: nat, tags: [ test-nat, destroy], state='absent' }
     - { role: rds, tags: [ test-rds, apply ], state='present' }
@@ -14,7 +15,8 @@
     - { role: css, tags: [ test-css, destroy], state='absent' }
     - { role: cce, tags: [ test-cce, apply ], state='present' }
     - { role: cce, tags: [ test-cce, destroy], state='absent' }
-    - { role: vpc, tags: [ test-vpc, destroy, test-nat, test-rds, test-css, test-cce ], state='absent' }
+    - { role: vpc_peering, tags: [ test-peering, destroy ], state='absent' }
+    - { role: vpc, tags: [ test-vpc, destroy, test-peering, test-nat, test-rds, test-css, test-cce ], state='absent' }
     #- { role: exceptiontest, tags: [ test-ex, apply ], state='present' }
 
     

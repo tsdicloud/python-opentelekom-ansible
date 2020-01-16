@@ -10,6 +10,17 @@ otc_os_auth:
 otc_cert_file: otc_certs.pem
 #ansible_ssh_key: ansible-master2
 
+# general openstack parameters
+otc_remote_auth:
+  auth_url: "https://iam.eu-de.otc.t-systems.com/v3"
+  domain_name: "{{vault_remote.domain}}"
+  username: "{{vault_remote.username}}"
+  password: "{{vault_remote.password}}"
+  project_name: "{{vault_remote.project}}"
+  tenant_name: "eu-de"
+otc_cert_file: otc_certs.pem
+#ansible_ssh_key: ansible-master2
+
 
 # proxy environment
 # > ansible -m setup <serveraddress>

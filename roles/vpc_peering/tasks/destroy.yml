@@ -1,0 +1,34 @@
+---
+  - name: Cleanup remote VPC and peering
+    otc_vpc_peering:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net.vpc.name }}-{{ net.remote.name }}-peering"
+  - otc_vpc:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_remote_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      name: "{{ net.remote.name }}"
+
+  - name: Cleanup peer VPC and peering
+    otc_vpc_peering:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net.vpc.name }}-{{ net.peer.name }}-peering"
+  - otc_vpc:
+      state: "absent"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      name: "{{ net.peer.name }}"

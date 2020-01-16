@@ -18,6 +18,14 @@ net:
       nameservers: "{{ ['100.125.4.25', '8.8.8.8'] }}"
   dns:
     zone: "ansibletest.internal"
+  peer:
+    name: "vpc-poc-peer"
+    cidr: "172.31.0.0/16"
+  remote:
+    name: "vpc-poc-remote"
+    cidr: "10.119.0.0/16"
+    project_id: "{{vault_remote.project_id}}"
+
 kms:
   keyname: "rbe-sdktest-key-000018"
 

@@ -1,0 +1,103 @@
+---  
+  - name: Local peering
+    otc_vpc:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net.peer.name }}"
+      cidr: "{{ net.peer.cidr }}"
+    register: peer_result
+  - set_fact:
+      net_facts:
+        peer: 
+          id: "{{ peer_result.id }}"
+  - otc_vpc_peering:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net.vpc.name }}-{{ net.peer.name }}-peering"
+      vpc: "{{ net.vpc.name }}"
+      peervpc:  "{{ net.peer.name }}"
+  - otc_vpc_peering_route:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      peering: "{{ net.vpc.name }}-{{ net.peer.name }}-peering"
+      destination: "{{ net.peer.cidr }}"
+      vpc: "{{ net.vpc.name }}"
+  - otc_vpc_peering_route:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      peering: "{{ net.vpc.name }}-{{ net.peer.name }}-peering"
+      destination: "{{ net.vpc.cidr }}"
+      vpc: "{{ net.peer.name }}"
+
+
+  - name: Remote peering
+    otc_vpc:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_remote_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net.remote.name }}"
+      cidr: "{{ net.remote.cidr }}"
+    register: remote_result
+  - set_fact:
+      net_facts:
+        remote: 
+          id: "{{ remote_result.id }}"
+  - otc_vpc_peering:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      name: "{{ net.vpc.name }}-{{ net.remote.name }}-peering"
+      vpc: "{{ net.vpc.name }}"
+      peervpc_id:  "{{ net_facts.remote.id }}"
+      peerproject_id: "{{ net.remote.project_id }}"
+  - otc_vpc_peering_reply:
+      state: "accept"
+      auth_type: password
+      auth:
+        "{{ otc_remote_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      peering: "{{ net.vpc.name }}-{{ net.remote.name }}-peering"
+  - otc_vpc_peering_route:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_os_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      peering: "{{ net.vpc.name }}-{{ net.remote.name }}-peering"
+      destination: "{{ net.remote.cidr }}"
+      vpc: "{{ net.vpc.name }}"
+  - otc_vpc_peering_route:
+      state: "present"
+      auth_type: password
+      auth:
+        "{{ otc_remote_auth }}"
+      cacert: "{{ otc_cert_file }}"
+      validate_certs: "yes"
+      peering: "{{ net.vpc.name }}-{{ net.remote.name }}-peering"
+      destination: "{{ net.vpc.cidr }}"
+      vpc: "{{ net.remote.name }}"
+
